@@ -32,7 +32,7 @@ var Janis = function(target) {
         for (i = 0; i < selectedElements.length; ++i) {
             collection.push(selectedElements[i]);
         }
-    } else if (!self.isArray(target)) {
+    } else if (!(target instanceof Array)) {
         collection.push(target);
     } else {
         collection = target;
@@ -56,23 +56,17 @@ Janis.pt = Janis.prototype = {
     t: 'transition',
     init: function(collection) {
         var div, style = "", props = ["moz", "o", "webkit", "ms"], 
-            pre = Janis.config.pre, self = this, transition=self.t, 
-            defaultSetting="all 1s ease";
+            pre = Janis.config.pre, self = this, transition=self.t;
         
         self.collection = collection;
         self.loopQueue = [];
         self.chainQueue = [];
         if (typeof pre === self.u) {
             div = document.createElement('div');
-            style += transition+":"+defaultSetting+";";
             props.forEach(function(prop) {
-                style += "-"+prop+"-"+transition+":"+defaultSetting+";";
-            });
-            
-            div.setAttribute("style", style);
-            props.forEach(function(prop) {
-                if (div.style["-"+prop+"-"+transition]) {
-                    pre = self.cap(prop) + self.cap(transition);
+                div.style[self.cap(prop)+"Transition"] = "all 1s ease";
+                if (div.style[self.cap(prop)+"TransitionProperty"]) {
+                    pre = self.cap(prop) + "Transition";
                 }
             });
             pre = pre ? pre : transition;
@@ -80,7 +74,7 @@ Janis.pt = Janis.prototype = {
         }
         self.p = pre;
         self.collection.forEach(function(el) {
-            el.style[pre] = defaultSetting;
+            el.style[pre] = "all 1s ease";
         });
         return self;
     },

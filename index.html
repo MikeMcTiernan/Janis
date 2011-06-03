@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Janis</title>
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">
+<style type="text/css">
+    html, body {
+        font-family: 'Open Sans', sans-serif;
+        margin: 0;
+        color: rgb(80, 80, 80);
+    }
+    
+    h1 {
+        position: absolute;
+        bottom: 0em;
+        right: 0.5em;
+        font-size: 4em;
+        opacity: 0;
+        line-height: 1em;
+        margin: 0;
+        letter-spacing: -0.07em;
+    }
+    
+    h1 .sub {
+        font-size: 0.25em;
+        position: relative;
+        top: 0.75em;
+        left: -1.5em;
+        letter-spacing: -0.02em;
+    }
+    
+    h1 a {
+        color: rgb(80, 80, 80); 
+        text-decoration: none;
+    }    
+    
+    
+    .test {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background-color: black;
+        -moz-transition-property: *;
+        -moz-transition-duration: 1000s;
+    }
+    
+    #test1 {
+        top: 0px;
+        left: 0px;
+    }
+    
+    #test2 {
+        top: 75px;
+        left: 75px;
+    }
+    
+    #test3 {
+        top: 0px;
+        left: 0px;
+    }
+    
+    .playground {
+        float: left;
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 10px;
+        border: 1px solid #000000;
+    }
+    
+    .subject {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.3);
+        top: 0px;
+        left: 0px;
+        width: 50px;
+        height: 50px;
+        opacity: 0.7;
+        border-radius: 25px;
+        -webkit-border-radius: 25px;
+        -moz-border-radius: 25px;
+        opacity: 0;
+    }
+    
+    blockquote {
+        position: absolute;
+        top: -1px;
+        left: 100px;
+        display: none;
+        opacity: 0;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.9);
+        color: rgb(255, 255, 255);
+        margin: 0;
+        min-width: 240px;
+        max-width: 400px;
+        z-index: 10000;
+    }
+</style>
+</head>
+<body>
+<h1><a href="https://github.com/MikeMcTiernan/Janis">Janis</a> <span class="sub">Javascript Microframework for DOM Animation</span></h1>
+    <div class="playground test1">
+        <div id="test1" class="test"></div>
+        <blockquote><pre>
+// On Hover
+Janis("#test1")
+    .chain()
+    .animate({
+        "top" : "50px",
+        "left" : "50px",
+        "duration": 1000,
+        "delay": 1000,
+        "easing": "ease-in-out"
+    })
+    .execute();
+        </pre></blockquote>
+    </div>
+    <div class="playground test2">
+        <div id="test2" class="test"></div>
+        <blockquote><pre>
+// Infinite Looping
+Janis("#test2")
+    .chain()
+    .animate({
+        "width" : "200px",
+        "height" : "200px",
+        "left" : "0px",
+        "top" : "0px",
+        "duration" : 500,
+        "easing": "ease-in-out"
+    })
+    .animate({
+        "width" : "50px",
+        "height" : "50px",
+        "left" : "75px",
+        "top" : "75px",
+        "duration" : 500,
+        "easing": "ease-in-out"
+    })
+    .loop(-1);
+        </pre></blockquote>
+    </div>
+    <div class="playground test3">
+        <blockquote><pre>
+var pg = document.querySelector(".test3"),
+    count = 0, bounce;
+    
+bounce = setInterval(function() {
+    var el = document.createElement("div");
+    el.className = "subject";
+    el.style.left = 
+        Math.floor(Math.random()*150) + "px";
+    pg.appendChild(el);
+    Janis(el).chain().animate({
+        "top":  "180px",
+        "delay" : 0,
+        "duration" : 1000,
+        "opacity": 1,
+        "easing" : "ease-in"
+    }).animate({
+        "top": randomHeight + "px",
+        "delay" : 0,
+        "duration" : 1000,
+        "easing" : "ease-out"
+    }).loop();
+    
+    if (++count === 10) {
+        clearInterval(bounce);
+    }
+}, 100);
+        </pre></blockquote>
+    </div>
+
+<a href="https://github.com/MikeMcTiernan/Janis"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
+
+<script type="text/javascript" src="janis.min.js"></script>
+<script type="text/javascript">
+    var playgrounds = document.querySelectorAll('.playground'), i;
+    
+    for (i = 0; i < playgrounds.length; ++i) {
+        playgrounds[i].addEventListener("mouseover", function() {
+            var bq = this.querySelector('blockquote');
+            bq.style.display = 'block';
+            Janis(bq).animate({ 'opacity': 1, 'left': '201px', 'duration': 500 });
+        }, false);
+        playgrounds[i].addEventListener("mouseout", function() {
+            var bq = this.querySelector('blockquote');
+            bq.style.display = 'block';
+            Janis(bq).animate({ 'opacity': 0, 'duration': 500, 'callback': function(opts) {
+                bq.style.left = '100px';
+                bq.style.display = 'none';
+            }});
+        }, false);
+    }
+
+    Janis(document.getElementsByTagName('h1')).animate({
+        "opacity": 1,
+        "right": "0em",
+        "bottom": "0px",
+        "duration": 1000,
+        "delay": 500
+    }).execute();
+
+    document.querySelector('#test1').addEventListener('mouseover', function() {
+        var where = (this.style.top == "150px" ? "0px" : "150px");
+        Janis("#test1").chain().animate({
+            "top" : where,
+            "left" : where,
+            "duration": 1000,
+            "delay": 0,
+            "easing": "ease-in-out"
+        }).execute();
+    }, false);
+    
+    var janisTest2 = Janis("#test2");
+    janisTest2.chain().animate({
+        "width" : "200px",
+        "height" : "200px",
+        "left" : "0px",
+        "top" : "0px",
+        "duration" : 500,
+        "easing": "ease-in-out"
+    }).animate({
+        "width" : "50px",
+        "height" : "50px",
+        "left" : "75px",
+        "top" : "75px",
+        "duration" : 500,
+        "easing": "ease-in-out"
+    }).loop();
+    
+    document.querySelector("#test2").addEventListener('click', function() {
+        if (janisTest2.paused) {
+            janisTest2.play();
+        } else {
+            janisTest2.pause();
+        }
+    }, false);
+
+    var pg = document.querySelector(".test3"), count = 0;
+    window['janis-bounce'] = window.setInterval(function() {
+        var el = document.createElement("div"), myJanis;
+        el.className = "subject";
+        el.style.left = Math.floor(Math.random() * (pg.offsetWidth - 50)) + "px";
+        pg.appendChild(el);
+        
+        myJanis = Janis(el)
+        
+        myJanis.chain().animate({
+            "top": (pg.offsetHeight - el.offsetHeight) + "px",
+            "delay" : 0,
+            "duration" : 1000,
+            "opacity": 1,
+            "easing" : "ease-in"
+        }).animate({
+            "top": Math.max(20, Math.floor(Math.random() * (pg.offsetHeight - el.offsetHeight))) + "px",
+            "delay" : 0,
+            "duration" : 1000,
+            "easing" : "ease-out"
+        }).loop();
+        
+        el.addEventListener("click", function() {
+            if (myJanis.paused) {
+                myJanis.play();
+            } else {
+                myJanis.pause();
+            }                
+        }, false);
+        
+        if (++count === 10) window.clearInterval(window['janis-bounce']);
+    }, 100);
+
+</script>
+</body>
+</html>
