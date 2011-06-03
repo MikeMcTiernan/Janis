@@ -1,8 +1,4 @@
-(function() {
-    if (!Object.prototype.forEach) Object.prototype.forEach = function(f, t) { 
-        for (var i in this) if (i !== "forEach") f.call(t, this[i], i, this);
-    };
-        
+(function() {	
     var Janis = function(target) {
         if (target instanceof NodeList || target instanceof HTMLCollection) {
             collection = new Array();
@@ -60,14 +56,15 @@
             if (typeof Janis.config.browserProperty === 'undefined') {
                 Janis.config.browserProperty = "transition";
                 var div = document.createElement('div'), style = "";
-                Janis.config.browserProperties.forEach(function(browserProperty) {
+                for (var i in Janis.config.browserProperties) {
+                    var browserProperty = Janis.config.browserProperties[i];
                     style += browserProperty + ": width 1s linear;";
-                });
+                };
                 
                 div.setAttribute("style", style);
-                Janis.config.browserProperties.forEach(function(browserProperties, JSProp) {
-                    if (div.style[JSProp]) Janis.config.browserProperty = JSProp;
-                });
+                for (var i in Janis.config.browserProperties) {
+                    if (div.style[i]) Janis.config.browserProperty = i;
+                };
             }
             this.collection.forEach(function(el, idx) {
                 el.style[Janis.config.browserProperty + 'Property'] = "*";
@@ -91,7 +88,7 @@
                 opts.callback = new Array(opts.callback);
                 
             this.callbacks[opts['index']] = opts.callback;
-            
+
             var el = this.collection[idx];
             
             el.style[Janis.config.browserProperty + "Duration"] = opts.duration + "ms";
