@@ -4,7 +4,9 @@ Janis Javascript Animation Framework 0.1
 Janis is a lightweight Javascript framework that provides simple animations via 
 CSS transitions for modern browsers on the web as well as mobile devices. It is
 not designed to solve everyone's problems--it's simply designed to organize 
-commonly used methods of animating DOM elements in Javascript.
+commonly used methods of animating DOM elements in Javascript. It is released
+under the MIT license and is free to re-use or modify in any way as long as you
+keep the copyright notice in the file.
 
 
 Usage
