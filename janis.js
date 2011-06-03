@@ -44,7 +44,7 @@ Janis.formatStyle = function(style) {
     var ret = "";
     style.split("-").forEach(function(value, idx) {
         ret += idx ? value.charAt(0).toUpperCase() + value.substr(1).toLowerCase() : value.toLowerCase();
-    }, this);
+    });
     return ret;
 };
 
@@ -133,7 +133,7 @@ Janis.pt = Janis.prototype = {
         };
         
         if (!opts.delay) {
-            setStyles(opts);
+            setStyles();
         } else {
             window.setTimeout(setStyles, opts.delay);
         }
