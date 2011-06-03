@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 
 var Janis = function(target) {
-    var i, collection = [], selectedElements;
+    var i, collection = [], selectedElements, self = this;
     if (target instanceof NodeList || target instanceof HTMLCollection) {
         for (i = 0; i < target.length; ++i) {
             collection.push(target[i]);
@@ -32,7 +32,7 @@ var Janis = function(target) {
         for (i = 0; i < selectedElements.length; ++i) {
             collection.push(selectedElements[i]);
         }
-    } else if (!(target instanceof Array)) {
+    } else if (!self.isArray(target)) {
         collection.push(target);
     } else {
         collection = target;
@@ -40,134 +40,130 @@ var Janis = function(target) {
     return new Janis.pt.init(collection);
 };
 
-Janis.formatStyle = function(style) {
-    var ret = "";
-    style.split("-").forEach(function(value, idx) {
-        ret += idx ? value.charAt(0).toUpperCase() + value.substr(1).toLowerCase() : value.toLowerCase();
-    });
-    return ret;
-};
 
 Janis.config = {
-    easing: "ease-in-out",
+    easing: "ease",
     duration: 0,
-    delay: 0,
-    browserProperties: {
-        "transition" : "transition",
-        "MozTransition" : "-moz-transition",
-        "OTransition" : "-o-transition",
-        "webkitTransition" : "-webkit-transition",
-        "MsTransition" : "-ms-transition"
-    }
+    delay: 0
 };
 
 Janis.pt = Janis.prototype = {
     callbacks: {},
     collection: [],
     counter: 0,
+    p: 0,
+    u: 'undefined',
+    t: 'transition',
     init: function(collection) {
-        var div, style = "", key;
+        var div, style = "", props = ["moz", "o", "webkit", "ms"], 
+            pre = Janis.config.pre, self = this, transition=self.t, 
+            defaultSetting="all 1s ease";
         
-        this.collection = collection;
-        this.loopQueue = [];
-        this.chainQueue = [];
-        if (typeof Janis.config.browserProperty === 'undefined') {
-            Janis.config.browserProperty = "transition";
+        self.collection = collection;
+        self.loopQueue = [];
+        self.chainQueue = [];
+        if (typeof pre === self.u) {
             div = document.createElement('div');
-            for (key in Janis.config.browserProperties) {
-                if (Janis.config.browserProperties.hasOwnProperty(key)) {
-                    style += Janis.config.browserProperties[key] + ": width 1s linear;";
-                }
-            }
+            style += transition+":"+defaultSetting+";";
+            props.forEach(function(prop) {
+                style += "-"+prop+"-"+transition+":"+defaultSetting+";";
+            });
             
             div.setAttribute("style", style);
-            for (key in Janis.config.browserProperties) {
-                if (Janis.config.browserProperties.hasOwnProperty(key) && div.style[key]) {
-                    Janis.config.browserProperty = key;
+            props.forEach(function(prop) {
+                if (div.style["-"+prop+"-"+transition]) {
+                    pre = self.cap(prop) + self.cap(transition);
                 }
-            }
+            });
+            pre = pre ? pre : transition;
+            Janis.config.pre = pre;
         }
-        this.collection.forEach(function(el) {
-            el.style[Janis.config.browserProperty + 'Property'] = "*";
-            el.style[Janis.config.browserProperty + 'Duration'] = Janis.config.duration + "ms";
-        }, this);
-        return this;
+        self.p = pre;
+        self.collection.forEach(function(el) {
+            el.style[pre] = defaultSetting;
+        });
+        return self;
+    },
+    isArray: function(variable) {
+        return variable instanceof Array;
+    },
+    cap: function(str) {
+        return str.charAt(0).toUpperCase() + str.substr(1).toLowerCase();
+    },
+    formatStyle: function(style) {
+        var ret = "", self = this;
+        style.split("-").forEach(function(value, idx) {
+            ret += idx ? self.cap(value) : value.toLowerCase();
+        });
+        return ret;
     },
     _animate: function(idx, opts) {
-        var el, value, self = this, setStyles;
+        var e, value, self = this;
     
-        opts.index = ++this.counter;
-        if (typeof opts.duration === "undefined") {
+        opts.index = ++self.counter;
+        if (typeof opts.duration === self.u) {
             opts.duration = Janis.config.duration;
         }
-        if (typeof opts.delay === "undefined") {
+        if (typeof opts.delay === self.u) {
             opts.delay = Janis.config.delay;
         }
-        if (typeof opts.easing === "undefined") {
+        if (typeof opts.easing === self.u) {
             opts.easing = Janis.config.easing;
         }
-        if (typeof opts.callback === "undefined") {
+        if (typeof opts.callback === self.u) {
             opts.callback = function() {
                 return;
             };
         }
-        if (!(opts.callback instanceof Array)) {
+        if (!self.isArray(opts.callback)) {
             opts.callback = [opts.callback];
         }
             
-        this.callbacks[opts.index] = opts.callback;
+        self.callbacks[opts.index] = opts.callback;
 
-        el = this.collection[idx];
-        el.style[Janis.config.browserProperty + "Duration"] = opts.duration + "ms";
-        el.style[Janis.config.browserProperty + "TimingFunction"] = opts.easing;
-    
-        setStyles = function() {
+        e = self.collection[idx];
+        e.style[self.p] = "all " + opts.duration + "ms " + opts.easing;
+        setTimeout(function() {
             var cssProp;
             for (cssProp in opts.css) {
                 if (opts.css.hasOwnProperty(cssProp)) {
                     value = opts.css[cssProp];
-                    cssProp = Janis.formatStyle(cssProp);
-                    el.style[cssProp] = value;
+                    cssProp = self.formatStyle(cssProp);
+                    e.style[cssProp] = value;
                 }
             }
-        };
-        
-        if (!opts.delay) {
-            setStyles();
-        } else {
-            window.setTimeout(setStyles, opts.delay);
-        }
+        }, opts.delay);
 
-        window.setTimeout(function() {
+        setTimeout(function() {
             self.callbacks[opts.index].forEach(function(callback) {
                 if (typeof callback === "function") {
                     callback(self, opts);
-                } else if (callback instanceof Array) {
+                } else if (self.isArray(callback)) {
                     callback[0].apply(self, callback[1]);
                 }
             });
         }, opts.delay + opts.duration + 1);
         
-        return this;
+        return self;
     },
     animate: function(animations, commit) {
-        var i, lastIdx = -1;
-        if (!(animations instanceof Array)) {
+        var i, lastIdx = -1, self = this;
+        if (!self.isArray(animations)) {
             animations = [animations];
-            for (i = 1; i < this.collection.length; ++i) {
+            for (i = 1; i < self.collection.length; ++i) {
                 animations.push(animations[0]);
             }
         }
 
-        if (this.isChained && !commit) {
-            this.chainQueue.push(["animate", [animations, true]]);
-            return this;
+        if (self.isChained && !commit) {
+            self.chainQueue.push(["animate", [animations, 1]]);
+            return self;
         }
 
-        this.collection.forEach(function(el, idx) {
+        self.collection.forEach(function(el, idx) {
             var key, animation, config = {css: {}};
             if (!animations[idx] && lastIdx === -1) {
-                return this;
+                return self;
             }
             
             if (!animations[idx]) {
@@ -187,101 +183,104 @@ Janis.pt = Janis.prototype = {
                 }
             }
             
-            this._animate(idx, config);
-        }, this);
+            self._animate(idx, config);
+        });
 
-        return this;
+        return self;
     },
     maxDuration: function(animations) {
         var maxDuration = -1,
             totalTime = -1,
-            isTimeout = false;
+            self = this;
             
         animations.forEach(function(el) {
-            if (typeof el.duration === "undefined") {
+            if (typeof el.duration === self.u) {
                 el.duration = Janis.config.duration;
             }
-            if (typeof el.delay === "undefined") {
+            if (typeof el.delay === self.u) {
                 el.delay = Janis.config.delay;
             }
             totalTime = el.duration + el.delay;
             if ( totalTime > maxDuration ) {
                 maxDuration = totalTime;
-                isTimeout = true;
             }
-        }, this);
+        });
         return maxDuration;
     },
-    isChained: false,
+    isChained: 0,
     chainQueue: [],
     chain: function(/* void */) {
-        this.isChained = true;
-        this.chainQueue = [];
-        return this;
+        var self = this;
+        self.isChained = 1;
+        self.chainQueue = [];
+        return self;
     },
     execute: function() {
-        if (!this.chainQueue.length) {
-            return this;
+        var self = this;
+        if (!self.chainQueue.length) {
+            return self;
         }
-        return this.loop(1);
+        return self.loop(1);
     },
     next: function(returnOperation) {
-        var operation = this.chainQueue.shift(), self = this;
+        var self = this, operation = self.chainQueue.shift();
         if (!operation) {
-            return returnOperation ? [] : this;
+            return returnOperation ? [] : self;
         }
         self[operation[0]].apply(self, operation[1]);
-        return returnOperation ? operation : this;
+        return returnOperation ? operation : self;
     },
     loopCounter: 0,
     loopQueue: [],
     loop: function(howMany, skipSetup) {
         var self = this, operation, maxDuration;
 
-        this.isChained = false;
+        self.isChained = 0;
         if (!skipSetup) {
-            if (!this.chainQueue.length) {
-                return this;
+            if (!self.chainQueue.length) {
+                return self;
             }
             
-            if (typeof howMany === 'undefined') {
+            if (typeof howMany === self.u) {
                 howMany = -1;
             }
-            this.loopCounter = howMany;
-            this.loopQueue = this.chainQueue.concat();
+            self.loopCounter = howMany;
+            self.loopQueue = self.chainQueue.concat();
         }
 
-        if (!this.chainQueue.length && this.loopQueue.length) {
-            this.chainQueue = this.loopQueue.concat();
-            if (this.loopCounter > -1) {
-                --this.loopCounter;
+        if (!self.chainQueue.length && self.loopQueue.length) {
+            self.chainQueue = self.loopQueue.concat();
+            if (self.loopCounter > -1) {
+                --self.loopCounter;
             }
         }
         
-        if (this.loopCounter === 0 || !this.chainQueue.length) {
-            return this;            
+        if (self.loopCounter === 0 || !self.chainQueue.length) {
+            return self;            
         }
 
-        if (!this.isPaused) {
-            operation = this.next(true);
+        if (!self.paused) {
+            operation = self.next(1);
             if (operation.length) {
-                maxDuration = this.maxDuration(operation[1][0]);
-                window.setTimeout(function() {
-                    self.loop(self.loopCounter, true);
+                maxDuration = self.maxDuration(operation[1][0]);
+                setTimeout(function() {
+                    self.loop(self.loopCounter, 1);
                 }, maxDuration);
             }
         }
-        return this;
+        return self;
     },
-    isPaused: false,
+    paused: 0,
     pause: function() {
-        this.isPaused = true;
-        return this;
+        var self = this;
+        self.paused = 1;
+        return self;
     },
     play: function() {
-        this.isPaused = false;
-        this.loop(this.loopCounter, true);
-        return this;
+        var self = this;
+        self.paused = 0;
+        self.loop(self.loopCounter, 1);
+        return self;
     }
 };
 
