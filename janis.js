@@ -52,11 +52,12 @@ Janis.pt = Janis.prototype = {
     collection: [],
     counter: 0,
     p: 0,
+    b: "",
     u: 'undefined',
     t: 'transition',
     init: function(collection) {
         var div, style = "", props = ["moz", "o", "webkit", "ms"], 
-            pre = Janis.config.pre, self = this, transition=self.t;
+            pre = Janis.config.pre, b = Janis.config.bro, self = this, transition=self.t;
         
         self.collection = collection;
         self.loopQueue = [];
@@ -72,6 +73,12 @@ Janis.pt = Janis.prototype = {
             pre = pre ? pre : transition;
             Janis.config.pre = pre;
         }
+        props.forEach(function(prop) {
+            if (pre.toLowerCase().indexOf(prop.toLowerCase()) === 0) {
+                self.b = "-"+prop+"-";
+            }
+        });
+        
         self.p = pre;
         self.collection.forEach(function(el) {
             el.style[pre] = "all 1s ease";
@@ -92,8 +99,7 @@ Janis.pt = Janis.prototype = {
         return ret;
     },
     _animate: function(idx, opts) {
-        var e, value, self = this;
-    
+        var e, value, self = this, setStyles;
         opts.index = ++self.counter;
         if (typeof opts.duration === self.u) {
             opts.duration = Janis.config.duration;
@@ -116,8 +122,14 @@ Janis.pt = Janis.prototype = {
         self.callbacks[opts.index] = opts.callback;
 
         e = self.collection[idx];
-        e.style[self.p] = "all " + opts.duration + "ms " + opts.easing;
-        setTimeout(function() {
+
+        if (opts.duration == 0) {
+            e.style[self.p] = "none";
+        } else {
+            e.style[self.p] = "all " + opts.duration + "ms " + opts.easing;
+        }
+        
+        setStyles = function() {
             var cssProp;
             for (cssProp in opts.css) {
                 if (opts.css.hasOwnProperty(cssProp)) {
@@ -126,7 +138,13 @@ Janis.pt = Janis.prototype = {
                     e.style[cssProp] = value;
                 }
             }
-        }, opts.delay);
+        }
+        
+        if (!opts.delay) {
+            setStyles();
+        } else {
+            setTimeout(setStyles, opts.delay);
+        }
 
         setTimeout(function() {
             self.callbacks[opts.index].forEach(function(callback) {
@@ -155,7 +173,7 @@ Janis.pt = Janis.prototype = {
         }
 
         self.collection.forEach(function(el, idx) {
-            var key, animation, config = {css: {}};
+            var key, animation, config = {css: {}}, transform = "";
             if (!animations[idx] && lastIdx === -1) {
                 return self;
             }
@@ -171,10 +189,19 @@ Janis.pt = Janis.prototype = {
                 if (animation.hasOwnProperty(key)) {
                     if (key === "duration" || key === "delay" || key === "easing" || key === "callback") {
                         config[key] = animation[key];
+                    } else if (key === "rotate" || key.indexOf("translate") === 0 || key.indexOf("skew") === 0) {
+                        transform += key + "("+animation[key]+") ";
+                    } else if (key === "transform") {
+                        transform += animation[key];
+                    } else if (key === "transform-origin") {
+                        config.css[self.b+key] = animation[key];
                     } else {
                         config.css[key] = animation[key];
                     }
                 }
+            }
+            if (transform.length) {
+                config.css[self.b+"transform"] = transform;
             }
             
             self._animate(idx, config);
