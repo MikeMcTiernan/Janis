@@ -9,7 +9,7 @@
         margin: 0;
         color: rgb(80, 80, 80);
     }
-    
+
     h1 {
         position: absolute;
         bottom: 0em;
@@ -22,7 +22,7 @@
         text-shadow: 1px 1px 64px rgba(255, 255, 255, 1.0);
         color: rgba(0, 0, 0, 0.8);
     }
-    
+
     h1 .sub {
         font-size: 0.25em;
         position: relative;
@@ -30,14 +30,14 @@
         left: -1.5em;
         letter-spacing: -0.02em;
     }
-    
+
     h1 a {
-        color: rgb(80, 80, 80); 
+        color: rgb(80, 80, 80);
         text-shadow: 1px 1px 64px rgba(255, 255, 255, 1.0);
         text-decoration: none;
-    }    
-    
-    
+    }
+
+
     .test {
         position: absolute;
         width: 50px;
@@ -46,17 +46,17 @@
         -moz-transition-property: *;
         -moz-transition-duration: 1000s;
     }
-    
+
     #test1 {
         top: 0px;
         left: 0px;
     }
-    
+
     #test2, #test4 {
         top: 75px;
         left: 75px;
     }
-    
+
     .playground {
         float: left;
         position: relative;
@@ -65,7 +65,7 @@
         margin: 10px;
         border: 1px solid #000000;
     }
-    
+
     .subject {
         position: absolute;
         background-color: rgba(0, 0, 0, 0.3);
@@ -79,7 +79,7 @@
         -moz-border-radius: 25px;
         opacity: 0;
     }
-    
+
     blockquote {
         position: absolute;
         top: -1px;
@@ -143,11 +143,11 @@ Janis("#test2")
         <blockquote><pre>
 var pg = document.querySelector(".test3"),
     count = 0, bounce;
-    
+
 bounce = setInterval(function() {
     var el = document.createElement("div");
     el.className = "subject";
-    el.style.left = 
+    el.style.left =
         Math.floor(Math.random()*150) + "px";
     pg.appendChild(el);
     Janis(el).chain().animate({
@@ -162,7 +162,7 @@ bounce = setInterval(function() {
         "duration" : 1000,
         "easing" : "ease-out"
     }).loop();
-    
+
     if (++count === 10) {
         clearInterval(bounce);
     }
@@ -192,7 +192,7 @@ test4.chain().animate({
 <script type="text/javascript" src="janis.js"></script>
 <script type="text/javascript">
     var playgrounds = document.querySelectorAll('.playground'), i;
-    
+
     for (i = 0; i < playgrounds.length; ++i) {
         playgrounds[i].addEventListener("mouseover", function() {
             var bq = this.querySelector('blockquote');
@@ -244,7 +244,7 @@ test4.chain().animate({
         "duration" : 500,
         "easing": "ease-in-out"
     }).loop();
-    
+
     document.querySelector("#test2").addEventListener('click', function() {
         if (janisTest2.paused) {
             janisTest2.play();
@@ -260,9 +260,9 @@ test4.chain().animate({
         el.className = "subject";
         el.style.left = Math.floor(Math.random() * (pg.offsetWidth - 50)) + "px";
         pg.appendChild(el);
-        
+
         myJanis = Janis(el)
-        
+
         myJanis.chain().animate({
             "top": (pg.offsetHeight - el.offsetHeight) + "px",
             "delay" : 0,
@@ -275,15 +275,15 @@ test4.chain().animate({
             "duration" : 1000,
             "easing" : "ease-out"
         }).loop();
-        
+
         el.addEventListener("click", function() {
             if (myJanis.paused) {
                 myJanis.play();
             } else {
                 myJanis.pause();
-            }                
+            }
         }, false);
-        
+
         if (++count === 10) window.clearInterval(window['janis-bounce']);
     }, 100);
 
@@ -298,7 +298,7 @@ test4.chain().animate({
         'delay': 0,
         'duration': 0
     }).loop();
-    
+
 </script>
 </body>
 </html>

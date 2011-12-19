@@ -56,9 +56,9 @@ Janis.pt = Janis.prototype = {
     u: 'undefined',
     t: 'transition',
     init: function(collection) {
-        var div, style = "", props = ["moz", "o", "webkit", "ms"], 
+        var div, style = "", props = ["moz", "o", "webkit", "ms"],
             pre = Janis.config.pre, b = Janis.config.bro, self = this, transition=self.t;
-        
+
         self.collection = collection;
         self.loopQueue = [];
         self.chainQueue = [];
@@ -78,7 +78,7 @@ Janis.pt = Janis.prototype = {
                 self.b = "-"+prop+"-";
             }
         });
-        
+
         self.p = pre;
         self.collection.forEach(function(el) {
             el.style[pre] = "all 1s ease";
@@ -118,7 +118,7 @@ Janis.pt = Janis.prototype = {
         if (!self.isArray(opts.callback)) {
             opts.callback = [opts.callback];
         }
-            
+
         self.callbacks[opts.index] = opts.callback;
 
         e = self.collection[idx];
@@ -128,7 +128,7 @@ Janis.pt = Janis.prototype = {
         } else {
             e.style[self.p] = "all " + opts.duration + "ms " + opts.easing;
         }
-        
+
         setStyles = function() {
             var cssProp;
             for (cssProp in opts.css) {
@@ -139,7 +139,7 @@ Janis.pt = Janis.prototype = {
                 }
             }
         }
-        
+
         if (!opts.delay) {
             setStyles();
         } else {
@@ -155,7 +155,7 @@ Janis.pt = Janis.prototype = {
                 }
             });
         }, opts.delay + opts.duration + 1);
-        
+
         return self;
     },
     animate: function(animations, commit) {
@@ -177,14 +177,14 @@ Janis.pt = Janis.prototype = {
             if (!animations[idx] && lastIdx === -1) {
                 return self;
             }
-            
+
             if (!animations[idx]) {
                 animation = animations[lastIdx];
             } else {
                 animation = animations[idx];
                 lastIdx = idx;
             }
-            
+
             for (key in animation) {
                 if (animation.hasOwnProperty(key)) {
                     if (key === "duration" || key === "delay" || key === "easing" || key === "callback") {
@@ -203,7 +203,7 @@ Janis.pt = Janis.prototype = {
             if (transform.length) {
                 config.css[self.b+"transform"] = transform;
             }
-            
+
             self._animate(idx, config);
         });
 
@@ -213,7 +213,7 @@ Janis.pt = Janis.prototype = {
         var maxDuration = -1,
             totalTime = -1,
             self = this;
-            
+
         animations.forEach(function(el) {
             if (typeof el.duration === self.u) {
                 el.duration = Janis.config.duration;
@@ -261,7 +261,7 @@ Janis.pt = Janis.prototype = {
             if (!self.chainQueue.length) {
                 return self;
             }
-            
+
             if (typeof howMany === self.u) {
                 howMany = -1;
             }
@@ -275,9 +275,9 @@ Janis.pt = Janis.prototype = {
                 --self.loopCounter;
             }
         }
-        
+
         if (self.loopCounter === 0 || !self.chainQueue.length) {
-            return self;            
+            return self;
         }
 
         if (!self.paused) {
