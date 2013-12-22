@@ -59,6 +59,7 @@ Janis.pt = Janis.prototype = {
         var div, style = "", props = ["moz", "o", "webkit", "ms"], 
             pre = Janis.config.pre, b = Janis.config.bro, self = this, transition=self.t;
         
+        self.callbacks = {};
         self.collection = collection;
         self.loopQueue = [];
         self.chainQueue = [];
